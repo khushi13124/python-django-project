@@ -1,0 +1,74 @@
+{% extends 'seller-header.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    
+</head>
+
+<body>
+     <!-- Breadcrumb Section Begin -->
+    <section class="breadcrumb-section set-bg" data-setbg="{% static 'img/breadcrumb.jpg' %}">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <div class="breadcrumb__text">
+                        <h2>Edit Product</h2>
+                        <div class="breadcrumb__option">
+                            <a href="{% url 'seller-index' %}">Home</a>
+                            <span>Edit Product</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Breadcrumb Section End -->
+
+    
+
+    <!-- Contact Form Begin -->
+    <div class="contact-form spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="contact__form__title">
+                        <h2>Edit Product</h2>
+                    </div>
+                </div>
+            </div>
+            {% if msg %}
+                <b style="color:blue;">{{msg}}</b>
+            {% endif %}
+            <form action="{% url 'seller-product-edit' pk=product.pk %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <input type="text" name="product_name" value="{{product.product_name}}">
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+                        <input type="text" name="product_price" value="{{product.product_price}}">
+                    </div>
+                    <div class="col-lg-12 text-center">
+                        <textarea  name="product_desc">{{product.product_desc}}</textarea>
+                    </div>
+                    <img src="{{product.product_image.url}}" width="100vh" height="100vh" >
+                    <div class="col-lg-12 col-md-12">
+                        <input type="file" name="product_image">
+                    </div>
+                    <div class="col-lg-12 text-center">
+                        <button type="submit" class="site-btn">Update Product</button>
+                    </div>
+                    
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Contact Form End -->
+
+</body>
+
+</html>
+{% endblock %}

@@ -1,0 +1,97 @@
+{% extends 'header.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+
+<body>
+    
+
+    <!-- Featured Section Begin -->
+    <section class="featured spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="section-title">
+                        <h2>My Cart</h2>
+                        <br><br>
+                        <h4>Net Price To Pay : {{net_price}}</h4>
+                    <form method="post">
+                        <input type="hidden" id="net_price" name="amount" value="{{net_price}}">
+                        <button type="button" class="btn btn-lg btn-primary" id="checkout-button">Checkout</button>
+                    </form>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="row featured__filter">
+                {% for i in carts %}
+                <div class="col-lg-3 col-md-4 col-sm-6 mix oranges fresh-meat">
+                    <div class="featured__item">
+                        <div class="featured__item__pic set-bg" data-setbg="{{i.product.product_image.url}}">
+                            <ul class="featured__item__pic__hover">
+                                <li><a href="{% url 'product-details' pk=i.product.pk %}"><i class="fa fa-info-circle"></i></a></li>
+                                
+                            </ul>
+                        </div>
+                        <div class="featured__item__text">
+                            <h6><a href="#">{{i.product.product_name}}</a></h6>
+                            <h5>Product Price : {{i.product.product_price}}</h5>
+                            <h5>Product Qty : </h5>
+                            <form name="change_qty" method="post" action="{% url 'change-qty' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="cid" value="{{i.pk}}">
+                                <input type="number" name="product_qty" min="1" max="10" value="{{i.product_qty}}" onchange="this.form.submit();">
+                            </form>
+                            <h5>Total Price : {{i.total_price}}</h5>
+                        </div>
+                    </div>
+                </div>
+               {% endfor %}
+            </div>
+        </div>
+    </section>
+    <!-- Featured Section End -->
+
+<script type="text/javascript">
+
+var stripe = Stripe('pk_test_51OA76ISA6ecKKynoJgp6SBMwxRjE1aQvTgLPI94uotQIpvlndhIzwNnnYb8Kaerj9SJXyNJoKY0j8CfWkPXSiG9h00rkjJOKo2');
+var checkoutButton = document.getElementById('checkout-button');
+
+checkoutButton.addEventListener('click', function() { 
+ fetch('/create-checkout-session/', {
+ method: 'POST',
+    headers:{
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest', //Necessary to work with request.is_ajax()
+
+    },
+    body: JSON.stringify({'post_data':'{{net_price}}'})
+ })
+ .then(function(response) {
+ return response.json();
+ })
+ .then(function(session) {
+ return stripe.redirectToCheckout({ sessionId: session.id });
+ })
+ .then(function(result) {
+ // If `redirectToCheckout` fails due to a browser or network
+ // error, you should display the localized error message to your
+ // customer using `error.message`.
+ if (result.error) {
+ alert(result.error.message);
+ }
+ })
+ .catch(function(error) {
+ console.error('Error:', error);
+ });
+ });
+ </script>
+</body>
+
+</html>
+{% endblock %}
